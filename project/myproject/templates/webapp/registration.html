@@ -1,0 +1,128 @@
+{% extends "webapp/main.html" %}
+
+{% block title %}<title>Служба аутентификации</title>{% endblock %}
+
+{% block body%}
+<!-- Окно регистрации -->
+<div class="registration-container rounded shadow">
+    <form method="post" class="row row-cols-lg-2 g-lg-3">
+        {% csrf_token %}
+        <button id="close-button" type="button" class="btn-close"
+            aria-label="Закрыть">
+        </button>
+
+        <div class="col-md-6">
+            <label for="inputName" class="form-label">Фамилия</label>
+            <input name="surname" type="text" class="form-control"
+                id="inputName"
+                placeholder="Иванов" required minlength="2">
+        </div>
+
+        <div class="col-md-6">
+            <label for="inputSurname" class="form-label">Имя</label>
+            <input name="name" type="text" class="form-control"
+                id="inputSurname"
+                placeholder="Иван" required minlength="2">
+        </div>
+
+        <div class="col-md-6">
+            <label for="inputPatronymic" class="form-label">Отчество</label>
+            <input name="patronymic" type="text" class="form-control"
+                id="inputPatronymic"
+                placeholder="Иванович" minlength="4">
+        </div>
+
+        <div class="col-12">
+            <label for="inputNumber" class="form-label">Номер телефона</label>
+            <input name="phone_number" type="text" class="form-control"
+                id="inputNumber">
+        </div>
+
+        <div class="col-12">
+            <label for="inputEmail" class="form-label">Почта</label>
+            <input name="email" type="text" class="form-control" id="inputEmail"
+                placeholder="test@example.com"
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}"
+                minlength="5">
+        </div>
+
+        <div class="mb3">
+            <label for="inputDepartment" class="form-label">Номер отдела</label>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">№</span>
+                <input name="department" type="text" class="form-control"
+                    placeholder="1234" maxlength="4"
+                    aria-label="Имя пользователя"
+                    aria-describedby="basic-addon1">
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label for="inputLogin" class="form-label">Логин</label>
+            <input name="login" type="text"
+                class="form-control" id="inputLogin" title="Логин должен
+                состоять только из английских букв и длинной от 3 до 20
+                символов." pattern="[a-zA-Z0-9]{3,20}"
+                minlength="3"
+                maxlength="20" required>
+        </div>
+
+        <div class="col-12">
+            <label for="inputPassword" class="form-label">Пароль</label>
+            <div class="input-group">
+                <input name="password" type="password" class="form-control"
+                    id="InputPassword" minlength="6" maxlength="20"
+                    pattern="^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[\W_]).{6,20}$"
+                    title="Пароль должен состоять из 6-20 символов и содержать
+                    как
+                    минимум один символ, одну заглавную букву или одну цифру."
+                    required>
+                <button class="btn btn-outline-secondary border" type="button"
+                    id="button-addon2"><i id="hidden-password-icon" class="fas
+                        fa-eye-slash"></i></button>
+            </div>
+        </div>
+
+        <div class="toast" role="alert" aria-live="assertive"
+            aria-atomic="true">
+            <div class="toast-header">
+                <i class="fas fa-exclamation"></i>
+                <strong class="me-auto">Оповещение</strong>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="toast" aria-label="Закрыть"></button>
+            </div>
+            <div class="toast-body">
+                Вы успешно вошли в систему!
+            </div>
+        </div>
+
+        <button id="reg" type="submit" class="btn btn-primary">Зарегестрироваться</button>
+    </form>
+</div>
+<script>
+    var element = document.getElementById('inputNumber');
+    var maskOptions = {
+        mask: '+7 000 000-00-00',
+        lazy: false
+    } 
+    var mask = new IMask(element, maskOptions);
+
+    document.getElementById("close-button").onclick = function () {
+        window.location.assign("http://127.0.0.1:8000/");
+    }
+
+    document.getElementById("button-addon2").onclick = function () {
+        let input = document.getElementById("InputPassword");
+        let icon = document.querySelector("#button-addon2 i");
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+          } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+          }
+        }
+</script>
+{% endblock %}

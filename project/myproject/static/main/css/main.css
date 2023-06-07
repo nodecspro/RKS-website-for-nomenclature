@@ -1,0 +1,184 @@
+/* Reset some default styles */
+body,
+html {
+  margin: 0 auto;
+  padding: 0;
+}
+
+.main-body p {
+  padding: 8px 12px 12px 8px;
+}
+
+/* Navbar styles */
+.navbar {
+  background-color: #f8f9fa;
+  padding: 6px 4px;
+}
+
+.navbar-brand {
+  font-weight: bold;
+  color: #000;
+}
+
+.navbar-nav {
+  margin-left: auto;
+}
+
+.nav-link {
+  color: #000;
+  text-decoration: none;
+  margin-left: 15px;
+}
+
+/* Center the navbar links vertically */
+.navbar-nav {
+  align-items: center;
+}
+
+/* Set active link style */
+.nav-item.active .nav-link {
+  font-weight: bold;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  .navbar-nav {
+    margin: 0;
+  }
+
+  .navbar-brand,
+  .nav-link {
+    margin-left: 0;
+    margin-right: 15px;
+  }
+
+  .form-container #close-button-login {
+    margin-left: 87%;
+  }
+
+  .registration-container #close-button {
+    margin-left: 91%;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 921px) {
+  .registration-container #close-button {
+    margin-left: 92%;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .registration-container button {
+    margin-left: 24%;
+  }
+}
+
+/* Авторизация */
+
+/* Форма авторизации */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 20%;
+  height: 40%;
+  text-align: left;
+  background-color: #ffffff;
+  padding: 12px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10%;
+}
+
+/* Поле ввода логина */
+
+.form-container input[type="checkbox"] {
+  padding: 8px;
+}
+
+.form-container form input[type="text"],
+.form-container form input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* Кнопки */
+.form-container button[type="submit"] {
+  width: 100%;
+  height: 32px;
+  margin-top: 16px;
+  padding: 2px;
+  background-color: #3b8ced;
+}
+
+#close-button-login {
+  margin-left: 91%
+}
+
+
+.form-check input {
+  width: 5px;
+  height: 5px;
+}
+
+
+/* Эффект при наведении на кнопку */
+.form-container button:hover {
+  background-color: #1363c5;
+}
+
+/* Эффект при выборе на кнопку */
+.form-container button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px lightskyblue;
+}
+
+/* Эффект при нажатии на кнопку */
+.form-container button:active {
+  background-color: #0c3772;
+}
+
+.registration-container {
+  width: 50%;
+  height: 40%;
+  background-color: #ffffff;
+  padding: 12px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5%;
+}
+
+button#close-button {
+  margin-left: 95%;
+}
+
+.registration-container .mb3 {
+  height: 70px;
+}
+
+.toast {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  width: 300px;
+  height: 100px;
+  background-color: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5%;
+}
+
+.toast i {
+  margin-right: 6px;
+}
+
+#hidden-password-icon {
+  width: 18px;
+  margin-left: -1px;
+  margin-right: 1px;
+}

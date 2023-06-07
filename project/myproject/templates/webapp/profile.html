@@ -1,0 +1,36 @@
+{% extends "webapp/main.html" %}
+{%block title%}
+<title>Профиль</title>
+{% endblock %}
+{% block body%}
+<div class="profileinfo">
+    <div class="d-flex align-items-start">
+        <div class="col-2 ms-4 mt-5 me-4">
+            <div class="list-group" id="list-tab" role="tablist">
+                <a class="list-group-item list-group-item-action active
+                    text-center"
+                    id="list-profile-list" data-bs-toggle="list"
+                    href="#list-profile" role="tab"
+                    aria-controls="list-profile">Профиль</a>
+            </div>
+        </div>
+        <div class="vr me-4"></div>
+        <div class="col-8">
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="list-profile"
+                    role="tabpanel"
+                    aria-labelledby="list-profile-list"></div>
+                <h2 class="text-center mt-3 mb-5">Профиль пользователя</h2>
+                <div class="text-left">
+                    <p>Фамилия: {{ user.surname }}</p>
+                    <p>Имя: {{ user.name }}</p>
+                    <p>Отчество: {{ user.patronymic }}</p>
+                    <p>Номер телефона: {{ user.phone }}</p>
+                    <p>Почта: {{ user.email }} </p>
+                    <p>Номер отдела: {{ user.department }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

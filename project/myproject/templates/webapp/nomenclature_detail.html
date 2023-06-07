@@ -1,0 +1,160 @@
+{% extends "webapp/main.html" %} {% block title %} <title>Информация о номенклатуре</title> {% endblock %} {% block body %} <div class="container">
+	<div class="row">
+		<div class="col-12">
+			<h2 href="{% url 'nomenclature_detail' link=nomenclature.link %}" class="text-center mt-3 mb-5">Название номенклатуры: {{ nomenclature.name }}</h2>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<p>
+				<strong>Дата и время создания: </strong>{{ nomenclature.create_date }}
+			</p>
+			<p>
+				<strong>Статус номенклатуры: </strong>{% if nomenclature.status %}Одобрена{% else %}Не одобрена{% endif %}
+			</p>
+			<p>
+				<strong>Файлы:</strong>
+			</p>
+            <ul>
+                {% for file in files %}
+                    <li class="mb-2">
+                        <a href="{{ file.file.url }}" download>{{ file.name }}</a> - {% if file.status %}Одобрен{% else %}Не одобрен{% endif %}
+                        {% if not file.status %}
+                            <button type="button" class="btn btn-secondary btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" data-toggle="modal" data-target="#similarFilesModal" data-file-name="{{ file.name }}" data-file-id="{{ file.id }}">Аналогичные файлы</button>
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <li>У этой номенклатуры нет файлов.</li>
+                {% endfor %}
+            </ul>
+			<div class="text-center mt-5">
+				<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addFilesModal">Добавить файл</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="addFilesModal" tabindex="-1" role="dialog" aria-labelledby="addFilesModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="addFilesModalLabel">Добавить файлы в: {{ nomenclature.name }}</h5>
+				<button type="button" class="close border text-center" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">{% include 'webapp/add_files_popup.html' %}</div>
+		</div>
+	</div>
+</div> 
+
+<div class="modal fade" id="similarFilesModal" tabindex="-1" role="dialog" aria-labelledby="similarFilesModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="similarFilesModalLabel">Аналогичные файлы</h5>
+                <button type="button" class="close border text-center" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <a id="similarFilesList"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#similarFilesModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var fileId = button.data('file-id');
+            var fileName = button.data('file-name');
+            var modal = $(this);
+    
+            // Make an AJAX request to retrieve all files
+            $.ajax({
+                url: '/get_all_files/',
+                success: function(response) {
+                    var similarFilesList = modal.find('#similarFilesList');
+                    similarFilesList.empty();
+    
+                    if (response.length > 0) {
+                        var filteredFiles = response.filter(function(similarFile) {
+                            return similarFile.name !== fileName || !similarFile.is_associated;
+                        });
+    
+                        if (filteredFiles.length > 0) {
+                            var filesWithScore = filteredFiles.map(function(similarFile) {
+                                var score = 0;
+                                var coloredName = '';
+                                for (var j = 0; j < Math.max(similarFile.name.length, fileName.length); j++) {
+                                    if (similarFile.name[j] === fileName[j]) {
+                                        coloredName += '<span class="text-success" role="button">' + similarFile.name[j] + '</span>';
+                                        score++;
+                                    } else {
+                                        coloredName += '<span class="text-danger" role="button">' + (similarFile.name[j] || '') + '</span>';
+                                    }
+                                }
+                                similarFile.coloredName = coloredName;
+                                return { file: similarFile, score: score };
+                            });
+    
+                            filesWithScore.sort(function(a, b) {
+                                return b.score - a.score;
+                            });
+    
+                            filesWithScore.forEach(function(fileWithScore) {
+                                var similarFile = fileWithScore.file;
+                                var listItem = $('<li></li>');
+                                listItem.html(similarFile.coloredName);
+    
+                                listItem.on('click', function() {
+                                    var csrftoken = getCookie('csrftoken');
+                                    $.ajaxSetup({
+                                        headers: {
+                                            'X-CSRFToken': csrftoken
+                                        }
+                                    });
+                                    $.ajax({
+                                        url: '/replace_file/',
+                                        method: 'POST',
+                                        data: {
+                                            originalFileId: fileId,
+                                            similarFileName: similarFile.name
+                                        },
+                                        success: function(response) {
+                                            console.log(response);
+                                        }
+                                    });
+                                });
+                                similarFilesList.append(listItem);
+                            });
+                        } else {
+                            similarFilesList.append('<p class="text-center">No similar files found.</p>');
+                        }
+                    } else {
+                        similarFilesList.append('<p class="text-center">No files found.</p>');
+                    }
+                }
+            });
+        });
+    });
+    
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+
+{% endblock %}

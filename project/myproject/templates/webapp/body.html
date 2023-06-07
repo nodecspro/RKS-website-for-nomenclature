@@ -1,0 +1,102 @@
+{% extends "webapp/main.html" %}
+{% block title %}
+<title>Главная</title>
+{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-center mt-3 mb-5">Номенклатура</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr class="text-center table-primary user-select-none">
+                        <th scope="col">
+                            Название
+                            <span class="sort-icon"></span>
+                        </th>
+                        <th scope="col">
+                            Дата создания
+                            <span class="sort-icon"></span>
+                        </th>
+                        <th scope="col">
+                            Статус
+                            <span class="sort-icon"></span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in nomenclature %}
+                    <tr>
+                        <td class="text-truncate">
+                            <a href="{% url 'nomenclature_detail' item.link %}">{{ item.name }}</a>
+                        </td>
+                        <td class="text-truncate">{{ item.create_date }}</td>
+                        <td class="text-center text-truncate">
+                            {% if item.status %}
+                            <i class="fas fa-check-circle text-success"></i>
+                            {% else %}
+                            <i class="fas fa-times-circle text-danger"></i>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 sticky-top text-center">
+            <a class="btn btn-primary" href="{% url 'create_nomenclature' %}"
+                id="add-item-button">Добавить
+                номенклатуру</a>
+        </div>
+    </div>
+</div>
+<script>
+    const table = document.querySelector('.table');
+    const headers = table.querySelectorAll('th');
+    headers.forEach(header => {
+        header.addEventListener('click', () => {
+            const tableRows = Array.from(table.querySelectorAll('tbody tr'));
+            const index = Array.from(header.parentNode.children).indexOf(header);
+            const isAscending = header.classList.contains('ascending');
+            tableRows.sort((a, b) => {
+                const aValue = a.querySelector(`td:nth-child(${index + 1})`).textContent.trim();
+                const bValue = b.querySelector(`td:nth-child(${index + 1})`).textContent.trim();
+                return aValue.localeCompare(bValue, 'en', { numeric: true, sensitivity: 'base' });
+            });
+            if (isAscending) {
+                tableRows.reverse();
+                header.classList.remove('ascending');
+                header.classList.add('descending');
+            } else {
+                headers.forEach(header => {
+                    header.classList.remove('ascending', 'descending');
+                });
+                header.classList.add('ascending');
+            }
+            tableRows.forEach(row => table.querySelector('tbody').appendChild(row));
+            updateSortIcons();
+        });
+    });
+    
+    // Update the sorting icons
+    function updateSortIcons() {
+        const sortIcons = document.querySelectorAll('.sort-icon');
+        sortIcons.forEach(sortIcon => {
+            const header = sortIcon.parentNode;
+            if (header.classList.contains('ascending')) {
+                sortIcon.innerHTML = '<i class="fas fa-sort-up"></i>';
+            } else if (header.classList.contains('descending')) {
+                sortIcon.innerHTML = '<i class="fas fa-sort-down"></i>';
+            } else {
+                sortIcon.innerHTML = '';
+            }
+        });
+    }
+</script>
+{% endblock %}

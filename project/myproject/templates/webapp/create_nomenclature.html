@@ -1,0 +1,67 @@
+{% extends "webapp/main.html" %}
+{% block title %}
+<title>Номенклатура</title>
+{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-center mt-3 mb-5">Добавление номенклатуры</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 offset-3">
+            {% if messages %}
+            <div class="messages text-bg-warning rounded">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <form method="post" action="{% url 'save_nomenclature' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    <label for="id_name">Название номенклатуры</label>
+                    <input type="text" class="form-control" id="id_name" name="name" placeholder="Важный документ №1" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="id_create_date">Дата и время создания</label>
+                    <input type="datetime-local" class="form-control" id="id_create_date" name="create_date" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="id_files">Файлы номенклатуры</label>
+                    <input type="file" class="form-control-file" id="id_files" name="files" accept=".xlsx, .xls" multiple required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Создать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    // Set current date and time as the default value
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = ('0' + (now.getMonth() + 1)).slice(-2);
+    var day = ('0' + now.getDate()).slice(-2);
+    var hours = ('0' + now.getHours()).slice(-2);
+    var minutes = ('0' + now.getMinutes()).slice(-2);
+    var formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+    document.getElementById("id_create_date").value = formattedDate;
+    
+    var create_date = document.getElementById("id_create_date");
+    create_date.addEventListener("input", function () {
+        var selectedDate = new Date(create_date.value);
+        var currentDate = new Date();
+        if (selectedDate > currentDate) {
+            create_date.setCustomValidity("Дата и время не могут быть в будущем");
+        } else {
+            create_date.setCustomValidity("");
+        }
+    });
+</script>
+{% endblock %}
